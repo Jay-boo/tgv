@@ -1,32 +1,38 @@
+import click
 import requests
-import os
+from datetime import timedelta
 import pandas as pd
-from dotenv import load_dotenv
-from datetime import datetime , date, timedelta
-load_dotenv()
 
-actual= date.today()
-string_actual=actual.strftime("%Y%m%dT%H%M%S")
-yesterday=actual -timedelta(days=1)
-string_yesterday=yesterday.strftime("%Y%m%dT%H%M%S")
+STOPS = {
+    "Rennes": "87471003",
+}
 
 
-TOKEN=os.getenv('TOKEN')
-URL="https://api.sncf.com/v1/coverage/sncf/stop_areas/stop_area%3ASNCF%3A87471003/physical_modes/physical_mode%3ALongDistanceTrain/arrivals?from_datetime="+string_yesterday+"&until_datetime="+string_actual+"&count=1000"
-response= requests.get(URL,headers={'Authorization':TOKEN})
-result=response.json()
-arrivals=result['arrivals']
-df=pd.DataFrame(arrivals)
-retard_count=0
-for arrival in arrivals:
+@click.command()
+@click.option('--token')
+@click.option('--date', type=click.DateTime(formats=["%Y-%m-%d"]))
+@click.option('--ville')
+def run(token, date, ville):
+    start_date = date.strftime("%Y%m%dT%H%M%S")
+    end_date = (date + timedelta(days=1)).strftime("%Y%m%dT%H%M%S")
+    url = f"https://api.navitia.io/v1/coverage/sncf/stop_areas/stop_area%3ASNCF%3A{STOPS[ville]}/physical_modes/physical_mode%3ALongDistanceTrain/arrivals?from_datetime={start_date}&until_datetime={end_date}&count=1000&"
 
-    infs=arrival["stop_date_time"]
-    base_arrival=infs["base_arrival_date_time"]
-    time_arrival=infs["arrival_date_time"]
-    base_arrival=datetime.strptime(base_arrival,"%Y%m%dT%H%M%S")
-    time_arrival=datetime.strptime(time_arrival,"%Y%m%dT%H%M%S")
-    if time_arrival > base_arrival:
-        retard_count+=1
+    response = requests.get(url, headers={"Authorization": token})
+    data = response.json()
+    df = pd.DataFrame(data["arrivals"])
 
-final_res= retard_count/len(arrivals)
-print(final_res)
+    output = []
+    for col in df[["display_informations", "stop_date_time"]].columns:
+        output.append(pd.json_normalize(df[col]))
+    trains = pd.concat(output, axis=1)
+
+    trains["arrival_date_time"] = pd.to_datetime(trains["arrival_date_time"])
+    trains["base_arrival_date_time"] = pd.to_datetime(trains["base_arrival_date_time"])
+    trains["delay"] = trains["arrival_date_time"] - trains["base_arrival_date_time"]
+    trains["is_delayed"] = trains["delay"].astype(int) != 0
+
+    trains.to_csv(f"{date.strftime('%Y-%m-%d')}_{ville}.csv", index=False)
+
+
+if __name__ == '__main__':
+    run()
