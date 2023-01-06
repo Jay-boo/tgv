@@ -12,3 +12,6 @@ jobs:
       -
         name: simple echo
         run: echo hello_world
+      -
+        name: run python 
+        run: python main.py
