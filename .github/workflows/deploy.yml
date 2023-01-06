@@ -14,4 +14,4 @@ jobs:
         run: echo hello_world
       -
         name: run python 
-        run: python main.py --token ${{ secrets.TOKEN }} --date 2023-01-05 --ville Rennes
+        run: python ./main.py --token ${{ secrets.TOKEN }} --date 2023-01-05 --ville Rennes
