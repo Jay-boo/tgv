@@ -1,0 +1,16 @@
+name: deploy
+on:
+  push:
+    branches:
+      - "main"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+    name : simple echo
+    run: echo hello
+      -
+    name : run script
+    run : python main.py
+    

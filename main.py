@@ -16,6 +16,7 @@ URL="https://api.sncf.com/v1/coverage/sncf/stop_areas/stop_area%3ASNCF%3A8747100
 response= requests.get(URL,headers={'Authorization':TOKEN})
 result=response.json()
 arrivals=result['arrivals']
+df=pd.DataFrame(arrivals)
 retard_count=0
 for arrival in arrivals:
 
