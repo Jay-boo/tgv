@@ -1,16 +1,14 @@
-name: deploy
+name: deploy_cloud
+
 on:
   push:
     branches:
       - "main"
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       -
-    name : simple echo
-    run: echo hello
-      -
-    name : run script
-    run : python main.py
-    
+        name: simple echo
+        run: echo hello_world
