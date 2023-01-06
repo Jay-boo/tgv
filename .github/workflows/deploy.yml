@@ -22,12 +22,12 @@ jobs:
         name: docker build image
         run: docker build . --file Dockerfile --tag sncf-on-time:$GITHUB_SHA
       -
-        name: docker build image
-        run: docker push europe-west1--docker.pkg.dev/ensai-2023-373710/ja-depot/sncf-on-time:$GITHUB_SHA
-      -
-
         id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+      -
+        name: docker push image
+        run: docker push europe-west1--docker.pkg.dev/ensai-2023-373710/ja-depot/sncf-on-time:$GITHUB_SHA
+      
