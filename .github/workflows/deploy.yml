@@ -22,14 +22,15 @@ jobs:
         name: run python 
         run: python main.py --token ${{ secrets.TOKEN }} --date 2023-01-05 --ville Rennes
       -
+        name: docker build image
+        run: docker build . --file Dockerfile --tag sncf-on-time:$GITHUB_SHA
+      -
+        name: docker build image
+        run: docker push europe-west1--docker.pkg.dev/ensai-2023-373710/ja-depot/sncf-on-time:$GITHUB_SHA
+      -
+
         id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
-      -
-        id: 'deploy'
-        uses: 'google-github-actions/deploy-cloud-functions@v1'
-        with:
-          name: 'function-run-script'
-          runtime: 'python38'
