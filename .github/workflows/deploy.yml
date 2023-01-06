@@ -10,8 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
+        name: checkout
+        uses: actions/checkout@v3
+      -
         name: simple echo
         run: echo hello_world
       -
+        name: install requirements
+        run: pip install -r requirements.txt
+      -
         name: run python 
-        run: python main.py
+        run: python main.py --token ${{ secrets.TOKEN }} --date 2023-01-05 --ville Rennes
+      -
+        id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+      -
+        id: 'deploy'
+        uses: 'google-github-actions/deploy-cloud-functions@v1'
+        with:
+          name: 'function-run-script'
+          runtime: 'python38'
