@@ -19,9 +19,6 @@ jobs:
         name: install requirements
         run: pip install -r requirements.txt
       -
-        name: run python 
-        run: python main.py --token ${{ secrets.TOKEN }} --date 2023-01-05 --ville Rennes
-      -
         name: docker build image
         run: docker build . --file Dockerfile --tag sncf-on-time:$GITHUB_SHA
       -
