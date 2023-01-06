@@ -16,5 +16,8 @@ jobs:
         name: simple echo
         run: echo hello_world
       -
+        name: install requirements
+        run: pip install -r requirements.txt
+      -
         name: run python 
         run: python main.py --token ${{ secrets.TOKEN }} --date 2023-01-05 --ville Rennes
