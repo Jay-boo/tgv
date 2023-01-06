@@ -1,11 +1,16 @@
+from pickle import loads
 import click
 import requests
 from datetime import timedelta
+import os
+
 import pandas as pd
+from google.oauth2 import service_account
 
 STOPS = {
     "Rennes": "87471003",
 }
+service_account_info=os.getenv("SERVICE_ACCOUNT_INFO")
 
 
 @click.command()
@@ -32,6 +37,17 @@ def run(token, date, ville):
     trains["is_delayed"] = trains["delay"].astype(int) != 0
 
     trains.to_csv(f"{date.strftime('%Y-%m-%d')}_{ville}.csv", index=False)
+    credentials=service_account.Credentials.from_service_account_info(
+            json.loads(service_account_info)
+            
+    )
+    trains.to_gbq(
+            'jeanalain.trains',
+            project_id='ensai-2023-373710',
+            location='eu',
+            credentials=credentials,
+            if_exists='replace'
+    )
 
 
 if __name__ == '__main__':
