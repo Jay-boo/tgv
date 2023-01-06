@@ -35,3 +35,12 @@ jobs:
         name: docker push image
         run: docker push europe-west1-docker.pkg.dev/ensai-2023-373710/ja-depot/sncf-on-time:$GITHUB_SHA
       
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: Deploy Cloud Run Job
+        run: |
+          gcloud beta run jobs create christophe-sncf-on-time \
+            --image europe-west1-docker.pkg.dev/ensai-2023-373710/ja-depot/sncf-on-time:$GITHUB_SHA \
+            --args --token ${{ secrets.TOKEN }} --date 2023-01-05 --ville Rennes \
+            --update-env-vars SERVICE_ACCOUNT_INFO=${{ secrets.GOOGLE_CREDENTIALS }}
