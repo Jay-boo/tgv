@@ -21,14 +21,13 @@ jobs:
       -
         name: docker build image
         run: docker build . --file Dockerfile --tag sncf-on-time:$GITHUB_SHA
-      -
-        id: 'auth'
-          name: 'Authenticate to Google Cloud'
-          uses: 'docker/login-action@v2'
-          with:
-            registry: europe-west1-docker.pkg.dev
-            username: _json_key
-            password: ${{secrets.GOOGLE_CREDENTIALS }}
+      -     
+        name: 'Authenticate to Google Cloud'
+        uses: 'docker/login-action@v2'
+        with:
+          registry: europe-west1-docker.pkg.dev
+          username: _json_key
+          password: ${{secrets.GOOGLE_CREDENTIALS }}
       - 
         name: Tag the Docker image
         run: docker tag sncf-on-time:$GITHUB_SHA europe-west1-docker.pkg.dev/ensai-2023-373710/ja-depot/sncf-on-time:$GITHUB_SHA
